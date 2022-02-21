@@ -7,5 +7,5 @@ app.get('/', (req) => {
 })
 
 app.listen(3001, () => {
-    console.log("started on port 3001")
+    console.log("started on port 3001!")
 })
