@@ -2,3 +2,22 @@ GET http://localhost:3001/
 
 ###
 GET http://localhost:3001/films
+
+###
+POST http://localhost:3001/favorites
+content-type: application/json
+
+{
+    "name": "list1",
+    "ids":[
+        {
+            "id": 0
+        },
+        {
+            "id": 1
+        },
+        {
+            "id": 5
+        }
+    ]
+}

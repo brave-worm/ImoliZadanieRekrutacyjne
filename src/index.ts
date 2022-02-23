@@ -3,10 +3,18 @@ import { createConnection } from 'typeorm';
 //require('dotenv').config();
 import dotenv from 'dotenv';
 dotenv.config();
+import { Film } from './classes/Film';
+import { List } from './entities/List'
+import { Films } from './entities/Films';
+import { Charakter } from './entities/Character';
+import bodyParser from "body-parser";
 
 const callSwapi = require('./external/SWAPI')
 
 const app = express()
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 const main = async () => {
     try {
@@ -16,7 +24,9 @@ const main = async () => {
             port: 5433, // TODO: Create type config file for env
             username: process.env.DB_USERNAME,
             password: process.env.DB_PASSWORD,
-            database: process.env.DB_NAME
+            database: process.env.DB_NAME,
+            entities: [List, Films, Charakter],
+            synchronize: true
         })
         console.log('Connected to Postgres')
     } catch (error) {
@@ -31,9 +41,12 @@ app.get('/', (req, res) => res.send({ status: 'OK!' }))
 
 app.get('/films', (req, res) => {
     try {
-        callSwapi.callApi(function (response: Response) {
-            console.log(response);
-            res.write(JSON.stringify(response));
+        callSwapi.callApi(function (response: any) {
+            var tableFilms:Film[] = []
+            response.results.forEach((element: any, index: number) => {
+                tableFilms.push(new Film(Number(index), element.release_date, element.title))
+        })
+            res.send(tableFilms);
             res.end();
         });
     } catch (error) {
@@ -43,9 +56,19 @@ app.get('/films', (req, res) => {
 })
 
 app.post('/favorites', (req, res) => {
-    try {
+    try {      
         //TODO:        
         // In the body of this request, the user can provide any number of movie IDs obtained with the previous query and any name for the list. As a result, an element describing the list is to be created in the database, the service is to read the details of each of these movies and save them in the database. Please note that items cannot be duplicated in the database. The information to save is the release dates, titles and the list of characters in the film. Characters are also allowed to appear in the database only once.
+
+        // const {
+        //     id
+        // } = req.body;
+        
+        
+
+        res.send(req.body);
+        res.end();
+
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "internal server error" })
